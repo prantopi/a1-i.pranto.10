@@ -2,10 +2,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Manages the clinic's whole collection of appointments for the day.
- * Enforces the clinic's fixed daily schedule (08:00-16:00 in 30 minute
- * slots) and makes sure the same health professional is never double
- * booked into the same slot.
+ * Manages the clinic's collection of appointments for the day - enforces
+ * the fixed daily schedule and stops a professional being double booked.
  */
 public class AppointmentBook {
 
@@ -47,13 +45,9 @@ public class AppointmentBook {
         return hourPart + ":" + minutePart;
     }
 
-    /**
-     * Adds a new appointment, provided its time slot is one the clinic
-     * actually runs and the health professional is free at that time.
-     *
-     * @param appointment the appointment to add
-     * @return true if the appointment was added, false if it was rejected
-     */
+    // rejects the appointment if the slot isn't one the clinic runs, or the
+    // professional is already booked then - returns false either way instead
+    // of throwing, since a failed booking is a normal thing that can happen
     public boolean addAppointment(Appointment appointment) {
         if (!VALID_SLOTS.contains(appointment.getTimeSlot())) {
             System.out.println("Warning: " + appointment.getTimeSlot() + " is not a bookable clinic time slot.");
@@ -82,9 +76,6 @@ public class AppointmentBook {
         return false;
     }
 
-    /**
-     * @return a copy of every appointment currently booked
-     */
     public ArrayList<Appointment> getAllAppointments() {
         return new ArrayList<Appointment>(appointments);
     }
@@ -109,23 +100,12 @@ public class AppointmentBook {
         return result;
     }
 
-    /**
-     * Sorts the given list of appointments by time, earliest first. Works
-     * on the full list or on a filtered subset - whatever list is passed in.
-     *
-     * @param list the appointments to sort, sorted in place
-     * @return the same list, now sorted
-     */
+    // works on the full list or a filtered subset - whatever gets passed in
     public ArrayList<Appointment> sortByTime(ArrayList<Appointment> list) {
         Collections.sort(list);
         return list;
     }
 
-    /**
-     * Cancels the appointment for the given professional at the given time slot.
-     *
-     * @return true if an appointment was found and cancelled, false otherwise
-     */
     public boolean cancelByProfessionalAndTime(String professionalId, String timeSlot) {
         for (int i = 0; i < appointments.size(); i++) {
             Appointment appointment = appointments.get(i);
@@ -139,11 +119,7 @@ public class AppointmentBook {
         return false;
     }
 
-    /**
-     * Cancels the appointment booked under the given patient phone number.
-     *
-     * @return true if an appointment was found and cancelled, false otherwise
-     */
+    // same idea, but matched by phone number instead of professional + time
     public boolean cancelByPatientPhone(String mobileNumber) {
         for (int i = 0; i < appointments.size(); i++) {
             Appointment appointment = appointments.get(i);
@@ -157,11 +133,7 @@ public class AppointmentBook {
         return false;
     }
 
-    /**
-     * Prints a list of appointments, one after another. Static because it
-     * doesn't need this book's own data - it can print any list handed to it,
-     * including a filtered or sorted one.
-     */
+    // static since it doesn't need this book's own data - can print any list handed to it
     public static void printAppointments(ArrayList<Appointment> list) {
         if (list.isEmpty()) {
             System.out.println("(no appointments)");

@@ -1,25 +1,21 @@
 import java.util.ArrayList;
 
 /**
- * Abstract base class for every kind of health professional in the system.
- * Captures the information and rules that are common to all of them: a
- * numeric id, a name, and the days of the week they work. Concrete
- * subclasses (GeneralPractitioner, Specialist, Nurse, Dietitian, ...) add
- * whatever extra information and behaviour is specific to that type.
+ * Abstract base class for every health professional in the system.
+ * Holds what's common to all of them - an id, a name and the days they
+ * work. Concrete subclasses (GeneralPractitioner, Specialist, Nurse,
+ * Dietitian) add whatever is specific to that type.
  *
- * This class is abstract on purpose - a "plain" health professional with
- * no specialty does not make sense in this system, so nobody should be
- * able to write "new HealthProfessional(...)" directly. Every subclass is
- * also forced to say what kind of professional it is, by implementing
- * getProfessionalType().
+ * Abstract because a "plain" health professional doesn't make sense here
+ * - every object has to be a real, specific type.
  */
 public abstract class HealthProfessional {
 
-    // the only days the clinic recognises - used to validate workingDays
+    // the only days the clinic recognises
     private static final String[] VALID_DAYS =
             {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
-    // sensible default for professionals who don't specify their days
+    // default schedule if a subclass doesn't specify one
     private static final String[] DEFAULT_WORKING_DAYS =
             {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
 
@@ -27,14 +23,7 @@ public abstract class HealthProfessional {
     private String name;
     private ArrayList<String> workingDays;
 
-    /**
-     * Creates a health professional with an explicit set of working days.
-     *
-     * @param id an id made up of digits only
-     * @param name the professional's name
-     * @param workingDays the days of the week this professional works, must not be empty
-     * @throws IllegalArgumentException if any of the details are missing or invalid
-     */
+    /** Full constructor - explicit working days. */
     public HealthProfessional(String id, String name, ArrayList<String> workingDays) {
         if (id == null || id.length() == 0 || !isNumeric(id)) {
             throw new IllegalArgumentException("Health professional id must contain digits only.");
@@ -53,17 +42,10 @@ public abstract class HealthProfessional {
 
         this.id = id;
         this.name = name;
-        // defensive copy so external code can't reach in and change our list later
-        this.workingDays = new ArrayList<String>(workingDays);
+        this.workingDays = new ArrayList<String>(workingDays); // copy so callers can't mutate it later
     }
 
-    /**
-     * Creates a health professional working the default Monday-Friday
-     * schedule, for callers who don't need anything different.
-     *
-     * @param id an id made up of digits only
-     * @param name the professional's name
-     */
+    // overloaded constructor, defaults to Mon-Fri
     public HealthProfessional(String id, String name) {
         this(id, name, defaultWorkingDays());
     }
@@ -102,21 +84,15 @@ public abstract class HealthProfessional {
         return name;
     }
 
-    /**
-     * @return a copy of the working days, so callers can look but not change them
-     */
+    // returns a copy, not the real list, so callers can't change it from outside
     public ArrayList<String> getWorkingDays() {
         return new ArrayList<String>(workingDays);
     }
 
-    /**
-     * @return a short label identifying what kind of health professional this is,
-     *         e.g. "General Practitioner"
-     */
+    // every subclass has to say what type of professional it is
     public abstract String getProfessionalType();
 
-    // Shared fields only - subclasses override toString(), call
-    // super.toString() and append their own extra detail on top.
+    // subclasses call super.toString() then add their own detail
     @Override
     public String toString() {
         return "Id: " + id + ", Name: " + name + ", Type: " + getProfessionalType()
@@ -134,9 +110,7 @@ public abstract class HealthProfessional {
         return result;
     }
 
-    // Two health professionals are the same professional if they share an
-    // id - this is what lets the appointment book detect a professional
-    // being double booked, no matter their concrete subtype.
+    // same id = same professional, regardless of subtype - used to catch double bookings
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

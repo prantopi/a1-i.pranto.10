@@ -1,11 +1,7 @@
 /**
- * A single appointment - links a patient to a health professional at a
- * specific time slot on the current day. An Appointment does not extend
- * Patient or HealthProfessional, it simply holds references to existing
- * objects that are passed in (composition, not inheritance).
- *
- * Appointments know how to order themselves by time, so a collection of
- * them can be sorted from earliest to latest.
+ * Links a patient to a health professional at a specific time slot on
+ * the current day. Holds references to existing Patient/HealthProfessional
+ * objects rather than extending either (composition, not inheritance).
  */
 public class Appointment implements Comparable<Appointment> {
 
@@ -13,14 +9,7 @@ public class Appointment implements Comparable<Appointment> {
     private HealthProfessional professional;
     private String timeSlot; // "HH:mm", 24 hour format
 
-    /**
-     * Creates a new appointment.
-     *
-     * @param patient the patient booking the appointment
-     * @param professional the health professional being seen - can be any subtype
-     * @param timeSlot the time of the appointment, in "HH:mm" 24 hour format
-     * @throws IllegalArgumentException if any detail is missing or the time is not well formed
-     */
+    // time must be "HH:mm", rest of the validation happens in AppointmentBook
     public Appointment(Patient patient, HealthProfessional professional, String timeSlot) {
         if (patient == null) {
             throw new IllegalArgumentException("An appointment must have a patient.");
@@ -36,10 +25,8 @@ public class Appointment implements Comparable<Appointment> {
         this.timeSlot = timeSlot;
     }
 
-    // Checks the string looks like a real "HH:mm" time - just the shape
-    // and range, not whether it is one of the clinic's bookable slots.
-    // Whether it's an actual bookable slot is a business rule enforced by
-    // the appointment book, not something a single appointment can know.
+    // just checks the shape/range of "HH:mm" - whether it's actually a
+    // bookable slot is checked later in AppointmentBook
     private static boolean isValidTimeFormat(String time) {
         if (time == null || time.length() != 5 || time.charAt(2) != ':') {
             return false;

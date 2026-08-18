@@ -1,10 +1,9 @@
 import java.util.ArrayList;
 
 /**
- * Entry point for the assessment. Builds a small set of health
- * professionals and patients, then exercises the appointment system end
- * to end - both normal use and the error cases the system is expected to
- * handle gracefully instead of crashing.
+ * Entry point - builds a small set of health professionals and patients,
+ * then runs the appointment system end to end, normal cases and error
+ * cases both.
  */
 public class AssignmentOne {
 
